@@ -54,3 +54,8 @@ Use the `-verbose` flag to print more details:
 git config --global --unset-all credential.helper azure
 git config --global --add credential.helper "azure -verbose"
 ```
+
+## See also
+
+* [git-credential-oauth](https://github.com/hickford/git-credential-oauth): a Git credential helper that authenticates to GitHub, GitLab, BitBucket and Gerrit
+* [Git Credential Manager](https://github.com/git-ecosystem/git-credential-manager)
