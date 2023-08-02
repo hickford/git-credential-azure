@@ -8,7 +8,6 @@ git-credential-azure is a Git credential helper that authenticates to [Azure Rep
 This is alpha-release software early in development:
 
 * Untested with work and school Microsoft accounts.
-* Tokens expire after 1 hour so you have to reauthenticate regularly.
 
 A mature alternative is [Git Credential Manager](https://github.com/GitCredentialManager/git-credential-manager).
 
@@ -34,6 +33,7 @@ This assumes you already have a storage helper configured such as cache or wincr
 
 ```sh
 git config --global --add credential.helper azure
+git config --global credential.https://dev.azure.com.useHttpPath true
 ```
 
 ### Unconfiguration
