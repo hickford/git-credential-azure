@@ -147,7 +147,7 @@ func getPAT(organization, accessToken string) (PatToken, error) {
 	// sadly https://github.com/microsoft/azure-devops-go-api doesn't have this function
 	url := fmt.Sprintf("https://vssps.dev.azure.com/%s/_apis/tokens/pats?api-version=7.1-preview.1", organization)
 	j := map[string]any{
-		"scopes": "vso.code_write vso.packaging",
+		"scope": "vso.code_write vso.packaging",
 	}
 	body, err := json.Marshal(j)
 	if err != nil {
