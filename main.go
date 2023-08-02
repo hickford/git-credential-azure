@@ -85,7 +85,7 @@ func main() {
 			log.Fatalln(err)
 		}
 		if verbose {
-			fmt.Fprintln(os.Stderr, "result:", result)
+			fmt.Fprintf(os.Stderr, "result: %+v\n", result)
 		}
 		organization := strings.SplitN(pairs["path"], "/", 2)[0]
 		var pt PatToken
@@ -93,6 +93,9 @@ func main() {
 			pt, err = getPAT(organization, result.AccessToken)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "error acquiring Personal Access Token", err)
+			}
+			if verbose {
+				fmt.Fprintf(os.Stderr, "pat: %+v\n", pt)
 			}
 		}
 		var username string
@@ -167,9 +170,6 @@ func getPAT(organization, accessToken string) (PatToken, error) {
 	if err != nil {
 		return PatToken{}, err
 	}
-	if verbose {
-		fmt.Fprintln(os.Stderr, string(body))
-	}
 	ptr := PatTokenResult{}
 	err = json.Unmarshal(body, &ptr)
 	if err != nil {
@@ -189,6 +189,11 @@ type PatTokenResult struct {
 
 // https://learn.microsoft.com/en-us/rest/api/azure/devops/tokens/pats/create?view=azure-devops-rest-7.1&tabs=HTTP#pattoken
 type PatToken struct {
-	Token   string    `json:"token"`
-	ValidTo time.Time `json:"validTo"`
+	AuthorizationId string    `json:"authorizationId"`
+	DisplayName     string    `json:"displayName"`
+	Scope           string    `json:"string"`
+	TargetAccounts  []string  `json:"targetAccounts"`
+	Token           string    `json:"token"`
+	ValidFrom       time.Time `json:"validFrom"`
+	ValidTo         time.Time `json:"validTo"`
 }
