@@ -34,6 +34,7 @@ This assumes you already have a storage helper configured such as cache or wincr
 
 ```sh
 git config --global --add credential.helper azure
+git config --global credential.https://dev.azure.com.useHttpPath true
 ```
 
 ### Unconfiguration
