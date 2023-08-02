@@ -131,6 +131,8 @@ func authenticate() (public.AuthResult, error) {
 		// https://github.com/git-ecosystem/git-credential-manager/blob/8c430c9484c90433ab30c25df7fc1005fe2f4ba4/src/shared/Microsoft.AzureRepos/AzureDevOpsConstants.cs#L15
 		// magic https://developercommunity.visualstudio.com/t/non-interactive-aad-auth-works-for-visual-studio-a/387853
 		"872cd9fa-d31f-45e0-9eab-6e460a02d1f1",
+		// https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-client-application-configuration#authority
+		// tested with personal account
 		public.WithAuthority("https://login.microsoftonline.com/organizations"))
 	if err != nil {
 		return public.AuthResult{}, err
