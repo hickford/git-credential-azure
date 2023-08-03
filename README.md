@@ -21,6 +21,12 @@ Then test that Git can find the application:
 
 If you have problems, make sure that the binary is [located in the path](https://superuser.com/a/284351/62691) and [is executable](https://askubuntu.com/a/229592/18504).
 
+### Linux
+
+[Several Linux distributions](https://repology.org/project/git-credential-azure/versions) include a git-credential-azure package:
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/git-credential-azure.svg?exclude_unsupported=1&header=)](https://repology.org/project/git-credential-azure/versions)
+
 ### Go users
 
 Go users can install the latest release to `~/go/bin` with:
