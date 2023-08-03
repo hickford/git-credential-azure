@@ -3,6 +3,8 @@ git-credential-azure
 
 git-credential-azure is a Git credential helper that authenticates to [Azure Repos](https://azure.microsoft.com/en-us/products/devops/repos) (dev.azure.com). Azure Repos is part of Azure DevOps.
 
+The first time you authenticate, the helper opens a browser window to Microsoft login. Subsequent authentication is non interactive.
+
 ### Caveats
 
 This is alpha-release software early in development:
