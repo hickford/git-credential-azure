@@ -47,6 +47,7 @@ func parse(input string) map[string]string {
 }
 
 func main() {
+	ctx := context.Background()
 	flag.BoolVar(&verbose, "verbose", false, "log debug information to stderr")
 	flag.Usage = func() {
 		printVersion()
@@ -80,7 +81,7 @@ func main() {
 		if verbose {
 			fmt.Fprintln(os.Stderr, "input:", pairs)
 		}
-		result, err := authenticate()
+		result, err := authenticate(ctx)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -132,7 +133,7 @@ func main() {
 	}
 }
 
-func authenticate() (public.AuthResult, error) {
+func authenticate(ctx context.Context) (public.AuthResult, error) {
 	client, err := public.New(
 		// https://github.com/git-ecosystem/git-credential-manager/blob/8c430c9484c90433ab30c25df7fc1005fe2f4ba4/src/shared/Microsoft.AzureRepos/AzureDevOpsConstants.cs#L15
 		// magic https://developercommunity.visualstudio.com/t/non-interactive-aad-auth-works-for-visual-studio-a/387853
@@ -145,7 +146,7 @@ func authenticate() (public.AuthResult, error) {
 	}
 	// https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/manage-personal-access-tokens-via-api?view=azure-devops
 	scopes := []string{"499b84ac-1321-427f-aa17-267ca6975798/.default"}
-	return client.AcquireTokenInteractive(context.Background(), scopes)
+	return client.AcquireTokenInteractive(ctx, scopes)
 }
 
 func getPAT(organization, accessToken string) (PatToken, error) {
