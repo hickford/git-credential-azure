@@ -41,6 +41,15 @@ This assumes you already have a storage helper configured such as cache or wincr
 
 ```sh
 git config --global --add credential.helper azure
+```
+
+### Subtleties with multiple users or organizations
+
+If you use more than one user or organization across Azure Repos, make sure that the remote URLs include usernames. This is the default if you copied the URLs from the Azure Repos web interface.
+
+Alternatively, you can set [credential.useHttpPath](https://git-scm.com/docs/gitcredentials#Documentation/gitcredentials.txt-useHttpPath) to store separate credentials for each repo:
+
+```sh
 git config --global credential.https://dev.azure.com.useHttpPath true
 ```
 
