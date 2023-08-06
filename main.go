@@ -100,8 +100,11 @@ func main() {
 		}
 		var username string
 		if pairs["username"] == "" {
-			// TODO: check correctness
-			username = "oauth2"
+			if organization != "" {
+				username = organization
+			} else {
+				username = "oauth2"
+			}
 		}
 		output := map[string]string{}
 		if username != "" {
