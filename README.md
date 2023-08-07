@@ -74,5 +74,5 @@ git config --global --add credential.helper "azure -verbose"
 
 ## See also
 
-* [git-credential-oauth](https://github.com/hickford/git-credential-oauth): a Git credential helper that authenticates to GitHub, GitLab, BitBucket and Gerrit
-* [Git Credential Manager](https://github.com/git-ecosystem/git-credential-manager)
+* [Git Credential Manager](https://github.com/git-ecosystem/git-credential-manager): a Git credential helper that authenticates to Azure Repos and other hosts
+* [git-credential-oauth](https://github.com/hickford/git-credential-oauth): a Git credential helper that authenticates to GitHub, GitLab, BitBucket and other hosts using OAuth
