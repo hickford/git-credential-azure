@@ -5,14 +5,6 @@ git-credential-azure is a Git credential helper that authenticates to [Azure Rep
 
 The first time you authenticate, the helper opens a browser window to Microsoft login. Subsequent authentication is non interactive.
 
-### Caveats
-
-This is alpha-release software early in development:
-
-* Untested with work and school Microsoft accounts.
-
-A mature alternative is [Git Credential Manager](https://github.com/GitCredentialManager/git-credential-manager).
-
 ## Installation
 
 **Download** binary from https://github.com/hickford/git-credential-azure/releases.
@@ -74,5 +66,6 @@ git config --global --add credential.helper "azure -verbose"
 
 ## See also
 
-* [Git Credential Manager](https://github.com/git-ecosystem/git-credential-manager): a Git credential helper that authenticates to Azure Repos and other hosts
-* [git-credential-oauth](https://github.com/hickford/git-credential-oauth): a Git credential helper that authenticates to GitHub, GitLab, BitBucket and other hosts using OAuth
+* [Git Credential Manager](https://github.com/git-ecosystem/git-credential-manager): a Git credential helper that authenticates to Azure Repos (and other hosts)
+  * Caveats: no support for Linux arm64
+* [git-credential-oauth](https://github.com/hickford/git-credential-oauth) (sister project): a Git credential helper that authenticates to GitHub, GitLab, BitBucket and other hosts using OAuth
