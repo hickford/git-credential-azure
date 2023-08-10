@@ -81,7 +81,7 @@ func main() {
 		if verbose {
 			fmt.Fprintln(os.Stderr, "input:", pairs)
 		}
-		result, err := authenticate(ctx)
+		result, err := authenticate(ctx, pairs["username"])
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -89,38 +89,39 @@ func main() {
 			fmt.Fprintf(os.Stderr, "result: %+v\n", result)
 		}
 		organization := strings.SplitN(pairs["path"], "/", 2)[0]
+		if organization == "" && !strings.Contains(pairs["username"], "@") {
+			organization = pairs["username"]
+		}
 		var pt PatToken
+		if organization == "" {
+			fmt.Fprintln(os.Stderr, "unable to create personal access token because Azure DevOps organization not specified")
+		}
 		if organization != "" {
 			pt, err = getPAT(organization, result.AccessToken)
 			if err != nil {
-				fmt.Fprintln(os.Stderr, "error acquiring Personal Access Token", err)
+				fmt.Fprintln(os.Stderr, "error acquiring personal access token", err)
 			}
 			if verbose {
 				fmt.Fprintf(os.Stderr, "pat: %+v\n", pt)
 			}
 		}
-		var username string
-		if pairs["username"] == "" {
-			if organization != "" {
-				username = organization
-			} else {
-				username = "oauth2"
-			}
-		}
 		output := map[string]string{}
-		if username != "" {
-			output["username"] = username
-		}
 		var password string
 		var expiry time.Time
+		var username string
 		if pt.Token != "" {
 			password = pt.Token
 			expiry = pt.ValidTo
+			username = organization
 		} else {
 			password = result.AccessToken
 			expiry = result.ExpiresOn
+			username = result.Account.PreferredUsername
 		}
 		output["password"] = password
+		if username != pairs["username"] {
+			output["username"] = username
+		}
 		if !expiry.IsZero() {
 			output["password_expiry_utc"] = fmt.Sprintf("%d", expiry.UTC().Unix())
 		}
@@ -133,7 +134,7 @@ func main() {
 	}
 }
 
-func authenticate(ctx context.Context) (public.AuthResult, error) {
+func authenticate(ctx context.Context, username string) (public.AuthResult, error) {
 	client, err := public.New(
 		// https://github.com/git-ecosystem/git-credential-manager/blob/8c430c9484c90433ab30c25df7fc1005fe2f4ba4/src/shared/Microsoft.AzureRepos/AzureDevOpsConstants.cs#L15
 		// magic https://developercommunity.visualstudio.com/t/non-interactive-aad-auth-works-for-visual-studio-a/387853
@@ -146,7 +147,11 @@ func authenticate(ctx context.Context) (public.AuthResult, error) {
 	}
 	// https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/manage-personal-access-tokens-via-api?view=azure-devops
 	scopes := []string{"499b84ac-1321-427f-aa17-267ca6975798/.default"}
-	return client.AcquireTokenInteractive(ctx, scopes)
+	opts := []public.AcquireInteractiveOption{}
+	if strings.Contains(username, "@") {
+		opts = append(opts, public.WithLoginHint(username))
+	}
+	return client.AcquireTokenInteractive(ctx, scopes, opts...)
 }
 
 func getPAT(organization, accessToken string) (PatToken, error) {
