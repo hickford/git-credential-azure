@@ -29,10 +29,40 @@ Go users can install the latest release to `~/go/bin` with:
 
 ## Configuration
 
-This assumes you already have a storage helper configured such as cache or wincred.
+### How it works
+
+Git is cleverly designed to [support multiple credential helpers](https://git-scm.com/docs/gitcredentials#_custom_helpers). To fill credentials, Git calls each helper in turn until it has the information it needs. git-credential-azure is a read-only credential-generating helper, designed to be configured in combination with a storage helper.
+
+To configure together with [git-credential-cache](https://git-scm.com/docs/git-credential-cache):
 
 ```sh
+git config --global --unset-all credential.helper
+git config --global --add credential.helper "cache --timeout 7200" # two hours
 git config --global --add credential.helper azure
+```
+
+You may choose a different storage helper such as `osxkeychain`, `wincred` or `libsecret`, but git-credential-azure must be configured last. This ensures Git checks for *stored* credentials before generating *new* credentials.
+
+**Windows users** must use storage helper `wincred` because [git-credential-cache isn't available on Windows](https://github.com/git-for-windows/git/issues/3892).
+
+### Manual config
+
+Edit your [global git config](https://git-scm.com/docs/git-config#FILES) `~/.gitconfig` to include the following lines:
+
+```ini
+[credential]
+	helper = cache --timeout 7200	# two hours
+	helper = azure
+```
+
+### Browserless systems
+
+On systems without a web browser, set the `-device` flag to authenticate on another device using [OAuth device flow](https://www.rfc-editor.org/rfc/rfc8628).
+
+```ini
+[credential]
+	helper = cache --timeout 7200	# two hours
+	helper = azure -device
 ```
 
 ### Subtleties with multiple users or organizations

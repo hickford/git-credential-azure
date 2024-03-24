@@ -18,6 +18,22 @@ import (
 	"github.com/AzureAD/microsoft-authentication-library-for-go/apps/public"
 )
 
+const (
+	// Client application ID for accessing Azure DevOps.
+	// https://github.com/git-ecosystem/git-credential-manager/blob/8c430c9484c90433ab30c25df7fc1005fe2f4ba4/src/shared/Microsoft.AzureRepos/AzureDevOpsConstants.cs#L15
+	// magic https://developercommunity.visualstudio.com/t/non-interactive-aad-auth-works-for-visual-studio-a/387853
+	clientID = "872cd9fa-d31f-45e0-9eab-6e460a02d1f1"
+
+	// Authority (identity provider) for accessing Azure DevOps.
+	// https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-client-application-configuration#authority
+	// tested with personal account
+	authority = "https://login.microsoftonline.com/organizations"
+
+	// Scope for accessing Azure DevOps.
+	// https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/manage-personal-access-tokens-via-api?view=azure-devops
+	scope = "499b84ac-1321-427f-aa17-267ca6975798/.default"
+)
+
 var (
 	verbose bool
 	// populated by GoReleaser https://goreleaser.com/cookbooks/using-main.version
@@ -49,6 +65,8 @@ func parse(input string) map[string]string {
 func main() {
 	ctx := context.Background()
 	flag.BoolVar(&verbose, "verbose", false, "log debug information to stderr")
+	var device bool
+	flag.BoolVar(&device, "device", false, "instead of opening a web browser locally, print a code to enter on another device")
 	flag.Usage = func() {
 		printVersion()
 		fmt.Fprintln(os.Stderr, "usage: git credential-azure [<options>] <action>")
@@ -81,7 +99,12 @@ func main() {
 		if verbose {
 			fmt.Fprintln(os.Stderr, "input:", pairs)
 		}
-		result, err := authenticate(ctx, pairs["username"])
+		var result public.AuthResult
+		if device {
+			result, err = authenticateDevice(ctx)
+		} else {
+			result, err = authenticate(ctx, pairs["username"])
+		}
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -135,23 +158,33 @@ func main() {
 }
 
 func authenticate(ctx context.Context, username string) (public.AuthResult, error) {
-	client, err := public.New(
-		// https://github.com/git-ecosystem/git-credential-manager/blob/8c430c9484c90433ab30c25df7fc1005fe2f4ba4/src/shared/Microsoft.AzureRepos/AzureDevOpsConstants.cs#L15
-		// magic https://developercommunity.visualstudio.com/t/non-interactive-aad-auth-works-for-visual-studio-a/387853
-		"872cd9fa-d31f-45e0-9eab-6e460a02d1f1",
-		// https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-client-application-configuration#authority
-		// tested with personal account
-		public.WithAuthority("https://login.microsoftonline.com/organizations"))
+	client, err := public.New(clientID, public.WithAuthority(authority))
 	if err != nil {
 		return public.AuthResult{}, err
 	}
-	// https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/manage-personal-access-tokens-via-api?view=azure-devops
-	scopes := []string{"499b84ac-1321-427f-aa17-267ca6975798/.default"}
+	scopes := []string{scope}
 	opts := []public.AcquireInteractiveOption{}
 	if strings.Contains(username, "@") {
 		opts = append(opts, public.WithLoginHint(username))
 	}
 	return client.AcquireTokenInteractive(ctx, scopes, opts...)
+}
+
+func authenticateDevice(ctx context.Context) (public.AuthResult, error) {
+	client, err := public.New(clientID, public.WithAuthority(authority))
+	if err != nil {
+		return public.AuthResult{}, err
+	}
+	scopes := []string{scope}
+	deviceCode, err := client.AcquireTokenByDeviceCode(ctx, scopes)
+	if err != nil {
+		return public.AuthResult{}, err
+	}
+	if verbose {
+		fmt.Fprintf(os.Stderr, "deviceCode: %+v\n", deviceCode)
+	}
+	fmt.Fprintf(os.Stderr, "%s\n", deviceCode.Result.Message)
+	return deviceCode.AuthenticationResult(ctx)
 }
 
 func getPAT(organization, accessToken string) (PatToken, error) {
