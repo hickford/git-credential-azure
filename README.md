@@ -39,6 +39,8 @@ To configure together with [git-credential-cache](https://git-scm.com/docs/git-c
 git config --global --unset-all credential.helper
 git config --global --add credential.helper "cache --timeout 7200" # two hours
 git config --global --add credential.helper azure
+# to also use git-credential-oauth
+git config --global --add credential.helper oauth
 ```
 
 You may choose a different storage helper such as `osxkeychain`, `wincred` or `libsecret`, but git-credential-azure must be configured last. This ensures Git checks for *stored* credentials before generating *new* credentials.
