@@ -7,6 +7,8 @@ The first time you authenticate, the helper opens a browser window to Microsoft 
 
 ## Installation
 
+### All platforms
+
 **Download** binary from https://github.com/hickford/git-credential-azure/releases.
 
 Then test that Git can find the application:
@@ -20,6 +22,12 @@ If you have problems, make sure that the binary is [located in the path](https:/
 [Several Linux distributions](https://repology.org/project/git-credential-azure/versions) include a git-credential-azure package:
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/git-credential-azure.svg?exclude_unsupported=1&header=)](https://repology.org/project/git-credential-azure/versions)
+
+### Windows
+
+Install with [winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/):
+
+    winget install hickford.git-credential-azure
 
 ### Go users
 
